@@ -1,0 +1,32 @@
+# this is ingress resource file used to hit the trefik-web-ui service when traefik-ui.kubeadm will hit
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: php-ingress
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: notes.xenon.team
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: php-svc
+          servicePort: http
+
+  # - host: notes.xenon.team.mysql
+  #   http:
+  #     paths:
+  #     - path: /
+  #       backend:
+  #         serviceName: mysql-svc
+  #         servicePort: mysqlhttp
+  - host: notes.xenon.team.phpmyadmin
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: phpmyadmin-svc
+          servicePort: phpmyadminhttp

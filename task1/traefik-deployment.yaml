@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress-lb  # selector will search for this label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb               # label
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb                # label
+    spec:
+      serviceAccountName: traefik-ingress
+      terminationGracePeriodSeconds: 60
+      containers:                                     # container of traefik in deployement/ pod
+      - image: traefik:v1.7
+        name: traefik-ingress-lb
+        ports:
+        - name: http
+          containerPort: 80
+        - name: admin
+          containerPort: 8080
+        args:
+        - --api
+        - --kubernetes
+        - --logLevel=INFO
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-ingress-service
+  namespace: kube-system
+spec:
+  selector:
+    k8s-app: traefik-ingress-lb
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: web
+    port: 80
+  - protocol: TCP
+    port: 8080
+    name: admin

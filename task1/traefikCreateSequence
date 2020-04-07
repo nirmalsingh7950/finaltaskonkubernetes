@@ -1,0 +1,49 @@
+
+Step 1: Enabling RBAC
+
+kubectl create -f traefik-service-acc.yaml
+kubectl create -f traefik-cr.yaml
+kubectl create -f traefik-crb.yaml
+
+Step 2: Deploy Traefik to a Cluster
+
+kubectl create -f traefik-deployment.yaml
+
+
+Step 3: Create NodePorts for External Access
+Let’s create a Service to access Traefik from outside of the cluster. To this end, we need a Service that exposes two NodePorts.
+
+kubectl create -f traefik-svc.yaml
+
+
+
+
+
+
+
+
+create an Ingress resource pointing to the Traefik Web UI backend.
+
+
+kubectl create -f traefik-ingress.yaml
+
+
+
+
+
+
+
+
+
+
+
+Step 4: Adding Ingress to the Cluster
+Now we have Traefik as the Ingress Controller in the Kubernetes cluster. However, we still need to define the Ingress resource and a Service that exposes Traefik Web UI.
+
+
+kubectl create -f traefik-webui-svc.yaml
+
+
+
+
+echo "192.168.1.103 traefik-ui.kubeadm" | sudo tee -a /etc/hosts

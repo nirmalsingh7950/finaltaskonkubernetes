@@ -1,0 +1,51 @@
+
+# php application
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-svc
+  namespace: kube-system
+spec:
+  type: NodePort
+  selector:
+    app: php-app
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  namespace: kube-system
+  labels:
+    app: mysql-app
+spec:
+  selector:
+    app: mysql-app
+  type: NodePort
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+    name: mysqlhttp
+
+---
+# phpmyadmin service
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-svc
+  namespace: kube-system
+  labels: 
+spec:
+  type: NodePort
+  selector:
+    app: phpmyadmin-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    name: phpmyadminhttp

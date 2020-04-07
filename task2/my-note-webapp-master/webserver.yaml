@@ -1,0 +1,98 @@
+
+# php application  deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-deploy
+  namespace: kube-system
+  labels:
+    app: php-app
+spec:
+  selector:
+    matchLabels:
+      app: php-app
+  template:
+    metadata:
+      labels:
+        app: php-app
+    spec:
+      containers:
+        - name: php-app-container
+          image: nirmalcontainer/php-mysql-image:v3
+          # imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+---
+#mysql deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deploy
+  namespace: kube-system
+  labels:
+    app: mysql-app
+spec:
+  selector:
+    matchLabels:
+      app: mysql-app
+  template:
+    metadata:
+      labels:
+        app: mysql-app
+    spec:
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
+      containers:
+        - image: mysql:8.0
+          name: mysql-app-container
+          imagePullPolicy: Always
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootpass
+            - name: MYSQL_DATABASE
+              value: my_note
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              value: 
+          args: ["--default-authentication-plugin=mysql_native_password"]
+          ports:
+            - containerPort: 3306
+              name: http
+          volumeMounts:
+            - mountPath: "/var/lib/mysql"
+              name: task-pv-storage
+
+---
+# phpmyadmin deploy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-deploy
+  namespace: kube-system
+  labels:
+    app: phpmyadmin-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin-app
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin-app
+    spec:
+      containers:
+        - name: phpmyadmin-container
+          image: phpmyadmin/phpmyadmin
+          ports:
+            - containerPort: 80
+          env:
+            - name: PMA_HOST
+              value: mysql-svc
+            - name: PMA_PORT
+              value: "3306"
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootpass
