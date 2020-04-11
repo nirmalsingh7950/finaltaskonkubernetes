@@ -20,3 +20,10 @@ sudo kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
 # make master node as worker node
 
 kubectl taint nodes --all node-role.kubernetes.io/master-
+
+
+
+# RBAC 
+kubectl create -f traefik-service-acc.yaml
+kubectl create -f traefik-cr.yaml
+kubectl create -f traefik-crb.yaml
